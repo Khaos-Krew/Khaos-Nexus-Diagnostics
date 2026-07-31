@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none'">
+  <title>Khaos Nexus Diagnostics</title>
+  <link rel="stylesheet" href="diagnostics.css">
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">Installer test companion</div>
+        <h1>Khaos Nexus Diagnostics</h1>
+        <p>Checks the installed build, captures failures automatically, and creates a redacted support bundle.</p>
+      </div>
+      <div class="health-orb" id="healthOrb"><span id="healthScore">—</span><small>health</small></div>
+    </header>
+
+    <section class="summary-grid">
+      <article class="summary-card"><span>Build</span><strong id="buildMode">Loading…</strong><small id="appVersion">Version —</small></article>
+      <article class="summary-card"><span>Runtime</span><strong id="runtimeVersion">—</strong><small>verified diagnostics package</small></article>
+      <article class="summary-card"><span>Warnings</span><strong id="warningCount">0</strong><small>review recommended</small></article>
+      <article class="summary-card"><span>Failed</span><strong id="failedCount">0</strong><small>action required</small></article>
+    </section>
+
+    <main class="workspace">
+      <section class="panel checks-panel">
+        <div class="panel-heading">
+          <div><span class="eyebrow">Automatic assessment</span><h2>System checks</h2></div>
+          <button class="primary" id="runButton">Run diagnostics</button>
+        </div>
+        <div class="check-list" id="checkList"><div class="empty">Reading the latest diagnostic report…</div></div>
+      </section>
+
+      <aside class="side-stack">
+        <section class="panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">Latest capture</span><h2>Report</h2></div></div>
+          <dl class="report-meta">
+            <div><dt>Report ID</dt><dd id="reportId">None</dd></div>
+            <div><dt>Captured</dt><dd id="reportTime">—</dd></div>
+            <div><dt>Trigger</dt><dd id="reportTrigger">—</dd></div>
+            <div><dt>Queued uploads</dt><dd id="outboxCount">0</dd></div>
+          </dl>
+          <div class="button-stack">
+            <button id="packageButton">Create support bundle</button>
+            <button id="copyButton">Copy summary</button>
+            <button id="folderButton">Open diagnostics folder</button>
+          </div>
+          <p class="privacy">Known tokens, passwords, API keys, and RCON credentials are redacted locally. <strong>secrets.bin is never copied.</strong></p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-heading compact"><div><span class="eyebrow">Optional backend</span><h2>Upload settings</h2></div></div>
+          <label>Diagnostics API endpoint
+            <input id="endpointInput" type="url" placeholder="https://diagnostics.example.com">
+          </label>
+          <label class="toggle-row"><input id="uploadToggle" type="checkbox"><span>Automatically upload captured reports</span></label>
+          <div class="button-row">
+            <button id="saveSettingsButton">Save settings</button>
+            <button id="uploadButton">Upload latest</button>
+          </div>
+          <p class="muted">Automatic uploads stay off until an HTTPS endpoint is saved and consent is enabled.</p>
+        </section>
+      </aside>
+    </main>
+
+    <footer><span id="statusText">Diagnostics are local-first.</span><button class="quiet" id="closeButton">Close</button></footer>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="diagnostics.js"></script>
+</body>
+</html>
