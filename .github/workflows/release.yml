@@ -1,0 +1,71 @@
+name: Validate and publish diagnostics runtime
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: diagnostics-runtime-release
+  cancel-in-progress: false
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run runtime tests
+        run: npm test
+
+      - name: Prepare verified payload
+        run: npm run release:prepare
+
+      - name: Resolve release identity
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          ARCHIVE="Khaos-Nexus-Diagnostics-Runtime-${VERSION}.zip"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "TAG=v${VERSION}" >> "$GITHUB_ENV"
+          echo "ARCHIVE=${ARCHIVE}" >> "$GITHUB_ENV"
+
+      - name: Create runtime archive
+        shell: bash
+        run: |
+          cd dist/runtime
+          zip -q -r "../${ARCHIVE}" .
+
+      - name: Finalize release manifest
+        run: npm run release:finalize
+
+      - name: Verify finalized assets
+        shell: bash
+        run: |
+          test -s "dist/${ARCHIVE}"
+          test -s dist/manifest.json
+          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('dist/manifest.json'));if(m.version!==process.env.VERSION||m.archive.name!==process.env.ARCHIVE||!/^[a-f0-9]{64}$/.test(m.archive.sha256))process.exit(1)"
+
+      - name: Publish immutable GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists. Bump package.json and payload/runtime.json to publish another runtime."
+          else
+            gh release create "${TAG}" \
+              "dist/${ARCHIVE}" \
+              "dist/manifest.json" \
+              --title "Khaos Nexus Diagnostics ${TAG}" \
+              --notes "Verified diagnostics runtime ${VERSION} for compatible Khaos Nexus desktop installations. The desktop app validates the archive and every extracted file before activation."
+          fi
