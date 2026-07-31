@@ -1,0 +1,12 @@
+{
+  "format": "khaos-nexus-diagnostics-runtime",
+  "formatVersion": 1,
+  "version": "0.1.0",
+  "runtimeApiVersion": 1,
+  "desktopCompatibility": {
+    "minVersion": "0.22.1",
+    "maxExclusiveVersion": "0.30.0"
+  },
+  "entry": "main/diagnostic-tool.cjs",
+  "service": "main/services/diagnostic-suite.cjs"
+}
