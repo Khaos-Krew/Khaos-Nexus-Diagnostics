@@ -1,0 +1,16 @@
+{
+  "name": "@khaos-krew/khaos-nexus-diagnostics-runtime",
+  "version": "0.1.0",
+  "description": "Independent diagnostics runtime for the Khaos Nexus desktop application",
+  "private": true,
+  "type": "commonjs",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "release:prepare": "node scripts/release.cjs prepare",
+    "release:finalize": "node scripts/release.cjs finalize"
+  }
+}
